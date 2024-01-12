@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import kpiRoutes from "./routes/kpi.js";
+import KPI from "./models/KPI.js";
+import { kpis } from "./data/data.js";
 
 /* CONFIGURATION */
 dotenv.config();
@@ -35,5 +37,9 @@ mongoose
         `You successfully connected to MongoDB! Server PORT: ${PORT}`,
       ),
     );
+
+    /* ADD DATA ONE TIME ONLY OR AS NEEDED */
+    // await mongoose.connection.db.dropDatabase();
+    // KPI.insertMany(kpis);
   })
   .catch((error) => console.log(`${error} did not connect`));
