@@ -3,7 +3,7 @@ import DashboardBox from "@/components/DashboardBox";
 import FlexBetween from "@/components/FlexBetween";
 import { useGetKpisQuery, useGetProductsQuery } from "@/state/api";
 import { Box, Typography, useTheme } from "@mui/material";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   CartesianGrid,
   LineChart,
@@ -15,6 +15,9 @@ import {
   PieChart,
   Pie,
   Cell,
+  ScatterChart,
+  Scatter,
+  ZAxis,
 } from "recharts";
 
 const pieData = [
@@ -28,7 +31,7 @@ const pieData = [
   },
 ];
 
-const Row2 = (props: Props) => {
+const Row2 = () => {
   const { palette } = useTheme();
   const pieColors = [palette.primary[800], palette.primary[300]];
   const { data: operationalData } = useGetKpisQuery();
@@ -48,6 +51,19 @@ const Row2 = (props: Props) => {
       )
     );
   }, [operationalData]);
+
+  const productExpenseData = useMemo(() => {
+    return (
+      productData &&
+      productData.map(({ _id, price, expense }) => {
+        return {
+          id: _id,
+          price: price,
+          expense: expense,
+        };
+      })
+    );
+  }, [productData]);
 
   return (
     <>
@@ -126,7 +142,7 @@ const Row2 = (props: Props) => {
               paddingAngle={2}
               dataKey="value"
             >
-              {pieData.map((entry, index) => (
+              {pieData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={pieColors[index]} />
               ))}
             </Pie>
@@ -152,7 +168,47 @@ const Row2 = (props: Props) => {
           </Box>
         </FlexBetween>
       </DashboardBox>
-      <DashboardBox gridArea="f"></DashboardBox>
+
+      <DashboardBox gridArea="f">
+        <BoxHeader title="Campaigns and Targets" sideText="+4%" />
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart
+            margin={{
+              top: 20,
+              right: 25,
+              bottom: 40,
+              left: -10,
+            }}
+          >
+            <CartesianGrid stroke={palette.grey[800]} />
+            <XAxis
+              type="number"
+              dataKey="price"
+              name="price"
+              axisLine={false}
+              tickLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(value) => `$${value}`}
+            />
+            <YAxis
+              type="number"
+              dataKey="expense"
+              name="expense"
+              axisLine={false}
+              tickLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(value) => `$${value}`}
+            />
+            <ZAxis type="number" range={[20]} />
+            <Tooltip formatter={(value) => `$${value}`} />
+            <Scatter
+              name="Products Expense Ratio"
+              data={productExpenseData}
+              fill={palette.tertiary[500]}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </DashboardBox>
     </>
   );
 };
