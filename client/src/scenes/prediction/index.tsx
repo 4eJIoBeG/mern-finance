@@ -26,7 +26,7 @@ const Predictions = () => {
     const monthData = kpiData[0].monthlyData;
 
     const formatted: Array<DataPoint> = monthData.map(
-      ({ month, revenue, expenses }, index: number) => {
+      ({ revenue }, index: number) => {
         return [index, revenue];
       },
     );
